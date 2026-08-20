@@ -29,6 +29,7 @@ load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file_
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # project root
 FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
 INSTANCE_DIR = os.path.join(BASE_DIR, 'instance')
+os.makedirs(INSTANCE_DIR, exist_ok=True)
 
 # ── Flask App ──
 app = Flask(
@@ -60,6 +61,9 @@ def ensure_patient_qrcode(user):
 
 
 db.init_app(app)
+
+with app.app_context():
+    db.create_all()
 
 login_manager = LoginManager()
 login_manager.login_view = 'login'
