@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeartGuard AI — Intelligent Cardiac Diagnostics</title>
+  <meta name="description" content="HeartGuard AI uses a 6-model ML ensemble trained on 1,302+ clinical records to predict heart disease risk instantly.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <style>
+    /* Tailwind config overrides */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ══ Liquid Glass Background ══ -->
+  <div class="liquid-bg">
+    <div class="liquid-orb liquid-orb-1"></div>
+    <div class="liquid-orb liquid-orb-2"></div>
+    <div class="liquid-orb liquid-orb-3"></div>
+    <div class="liquid-orb liquid-orb-4"></div>
+  </div>
+  <div class="liquid-grid"></div>
+
+  <!-- ══ Floating Heart Particles ══ -->
+  <div class="hearts-bg"></div>
+
+  <!-- ══════════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════════ -->
+  <nav class="navbar">
+    <!-- Brand -->
+    <a href="/" class="nav-brand">
+      <div class="nav-heart-icon">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="#f43f5e">
+          <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/>
+        </svg>
+      </div>
+      <span>Heart<span class="text-grad-rose">Guard</span></span>
+    </a>
+
+    <!-- Desktop Links -->
+    <div class="nav-links">
+      <a href="/" class="nav-link nav-link-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" class="nav-link nav-link-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        {% if current_user.role == 'patient' %}
+          <a href="{{ url_for('predict') }}" class="nav-link nav-link-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Assessment
+          </a>
+          <a href="{{ url_for('doctor_directory') }}" class="nav-link nav-link-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Find Doctors
+          </a>
+          <a href="{{ url_for('medical_files') }}" class="nav-link nav-link-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3z"/></svg>
+            Medical Files
+          </a>
+        {% endif %}
+        {% if current_user.role == 'doctor' %}
+          <a href="{{ url_for('qr_scanner') }}" class="nav-link nav-link-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><path d="M12 1v6m5.657-1.343l-4.243 4.243m-6.828 0l-4.243-4.243M23 12h-6m-6 0H1m5.657 5.657l4.243-4.243m6.828 0l4.243 4.243M12 17v6"/></svg>
+            QR Scanner
+          </a>
+        {% endif %}
+        <a href="{{ url_for('account') }}" class="nav-link nav-link-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Account
+        </a>
+      {% endif %}
+      <a href="{{ url_for('help_page') }}" class="nav-link nav-link-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Help
+      </a>
+      <a href="{{ url_for('contact') }}" class="nav-link nav-link-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Contact
+      </a>
+    </div>
+
+    <!-- Actions -->
+    <div class="nav-actions flex items-center gap-2">
+      <!-- Google Translate Widget -->
+      <div id="google_translate_element" class="scale-75 hidden md:block" style="transform-origin: right;"></div>
+
+      {% if current_user.is_authenticated %}
+        <span style="font-size:0.82rem; color:var(--text-dim); display:none;" class="md:inline">
+          Hi, {{ current_user.name.split()[0] }}
+          <span class="badge badge-rose ml-1">{{ current_user.role }}</span>
+        </span>
+        <a href="{{ url_for('logout') }}" class="btn btn-ghost" style="padding:0.5rem 1.25rem; font-size:0.85rem;">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-ghost" style="padding:0.5rem 1.25rem; font-size:0.85rem;">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-rose" style="padding:0.5rem 1.25rem; font-size:0.85rem;">Get Started</a>
+      {% endif %}
+
+      <!-- Mobile hamburger -->
+      <button class="nav-hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══ Flash Messages ══ -->
+  <div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-msg flash-{{ category if category in ['success','error','warning'] else 'success' }}">
+            {% if category == 'success' %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span style="color:#99f6e4; font-size:0.88rem;">{{ message }}</span>
+            {% elif category == 'error' %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              <span style="color:#fda4af; font-size:0.88rem;">{{ message }}</span>
+            {% else %}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span style="color:#fde68a; font-size:0.88rem;">{{ message }}</span>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- ══ Page Content ══ -->
+  <main class="flex-1 relative z-10">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ══ SOS Emergency Button ══ -->
+  <a href="tel:911" class="fixed bottom-6 left-6 z-50 bg-red-600/90 text-white p-4 rounded-full shadow-[0_0_20px_rgba(220,38,38,0.6)] hover:bg-red-500 hover:scale-110 transition-all flex items-center justify-center anim-heartbeat" title="Emergency / SOS">
+    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/></svg>
+  </a>
+
+  {% if current_user.is_authenticated %}
+  <!-- ══ 24/7 AI Health Chatbot Widget ══ -->
+  <div id="chatbot-container" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <!-- Chat Window (Hidden by default) -->
+    <div id="chatbot-window" class="hidden w-80 h-96 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-4 transition-all pb-1">
+      <div class="bg-indigo-600 p-3 flex justify-between items-center text-white">
+        <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            <h3 class="font-semibold text-sm">HeartGuard AI Guide</h3>
+        </div>
+        <button id="chatbot-close" class="text-white hover:text-indigo-200">&times;</button>
+      </div>
+      <div id="chatbot-messages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-800/50 text-sm">
+        <div class="bg-slate-700/50 p-2 rounded-lg text-slate-200 self-start text-xs rounded-tl-none border-l-2 border-indigo-400">
+            Hi! I am the 24/7 Heart Health AI. Ask me general questions about cardiac care or your symptoms. <i>(I am not a doctor)</i>
+        </div>
+      </div>
+      <form id="chatbot-form" class="p-2 bg-slate-900 border-t border-slate-700 flex gap-2">
+        <input type="text" id="chatbot-input" placeholder="Ask something..." class="flex-1 bg-slate-800 text-white text-xs rounded border border-slate-600 px-2 py-2 outline-none">
+        <button type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded text-xs">Send</button>
+      </form>
+    </div>
+    
+    <!-- Floating Button -->
+    <button id="chatbot-toggle" class="bg-indigo-600 hover:bg-indigo-500 text-white p-4 rounded-full shadow-[0_0_20px_rgba(79,70,229,0.5)] transition-all">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+    </button>
+  </div>
+  {% endif %}
+
+  <!-- ══ Footer ══ -->
+  <footer class="footer relative z-10">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+
+        <!-- Brand -->
+        <div class="md:col-span-2">
+          <div class="footer-brand mb-3">
+            <span>Heart<span class="text-grad-rose">Guard</span></span>
+            <span style="font-size:0.7rem; font-family:'DM Sans',sans-serif; font-weight:400; color:var(--text-dim); display:block; margin-top:4px;">AI-Powered Cardiac Diagnostics</span>
+          </div>
+          <p style="color:var(--text-dim); font-size:0.85rem; line-height:1.7; max-width:320px;">
+            Advanced ML ensemble trained on 1,302+ clinical records. Empowering doctors and patients with intelligent heart disease risk assessment.
+          </p>
+          <!-- ECG mini line -->
+          <div style="margin-top:1.5rem; height:40px; border-radius:8px; overflow:hidden; opacity:0.6;">
+            <canvas id="ecgCanvas" style="width:100%;height:40px;"></canvas>
+          </div>
+        </div>
+
+        <!-- Links -->
+        <div>
+          <h4 style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-bottom:1rem;">Platform</h4>
+          <div class="footer-links flex flex-col gap-2">
+            <a href="/">Home</a>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+            {% if current_user.is_authenticated %}
+              <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            {% endif %}
+          </div>
+        </div>
+
+        <div>
+          <h4 style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-bottom:1rem;">Support</h4>
+          <div class="footer-links flex flex-col gap-2">
+            <a href="{{ url_for('help_page') }}">Help Center</a>
+            <a href="{{ url_for('contact') }}">Contact Us</a>
+            <a href="{{ url_for('help_page') }}#faq">FAQ</a>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top:1.5rem; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
+        <p style="color:var(--text-dim); font-size:0.8rem;">&copy; 2026 HeartGuard Medical Systems. All rights reserved.</p>
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+          <span class="badge badge-rose">Flask + SQLite</span>
+          <span class="badge badge-blue">6-Model ML Ensemble</span>
+          <span class="badge" style="background:rgba(168,85,247,0.15);color:#c084fc;border:1px solid rgba(168,85,247,0.25);">1,302+ Records</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  
+  <!-- Google Translate -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- Notification Engine & Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/static/js/service-worker.js').then((reg) => {
+                console.log('ServiceWorker registered:', reg.scope);
+            }).catch(err => console.log('ServiceWorker failed:', err));
+        });
+    }
+
+    // Medication/Water Notification Engine
+    function checkReminders() {
+        if ("Notification" in window) {
+            if (Notification.permission === "granted") {
+                const hour = new Date().getHours();
+                // Simple schedule: Water every 2 hours, Meds at 9AM and 8PM
+                if (hour % 2 === 0 && hour >= 8 && hour <= 20) {
+                    new Notification("💧 HeartGuard Health Reminder", {
+                        body: "Time to drink a glass of water and take a 5-minute walk to stay active!",
+                        icon: "/static/images/heart_icon.png" // fallback
+                    });
+                }
+                if (hour === 9) {
+                    new Notification("💊 Morning Medication", {
+                        body: "Reminder: Take your prescribed morning heart medication after breakfast."
+                    });
+                }
+                if (hour === 20) {
+                    new Notification("💊 Evening Medication", {
+                        body: "Reminder: Take your prescribed evening heart medication after dinner."
+                    });
+                }
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+        }
+    }
+    
+    // Check reminders every hour
+    setInterval(checkReminders, 3600000);
+    
+    // Request permission immediately and do an initial check
+    if ("Notification" in window) {
+        if (Notification.permission === "default") {
+            Notification.requestPermission().then(() => checkReminders());
+        } else {
+            // Uncomment to test immediately on load
+            // checkReminders();
+        }
+    }
+  </script>
+
+  <!-- Chatbot Logic -->
+  <script>
+    const chatToggle = document.getElementById('chatbot-toggle');
+    const chatWindow = document.getElementById('chatbot-window');
+    const chatClose = document.getElementById('chatbot-close');
+    const chatForm = document.getElementById('chatbot-form');
+    const chatInput = document.getElementById('chatbot-input');
+    const chatMessages = document.getElementById('chatbot-messages');
+
+    if (chatToggle && chatWindow) {
+        chatToggle.addEventListener('click', () => {
+            chatWindow.classList.toggle('hidden');
+        });
+    }
+
+    if (chatClose && chatWindow) {
+        chatClose.addEventListener('click', () => {
+            chatWindow.classList.add('hidden');
+        });
+    }
+
+    if (chatForm && chatInput && chatMessages) {
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = chatInput.value.trim();
+            if(!msg) return;
+
+            // Add User Message
+            const userDiv = document.createElement('div');
+            userDiv.className = "bg-slate-600 p-2 text-white self-end text-xs rounded-lg rounded-tr-none ml-8";
+            userDiv.innerText = msg;
+            chatMessages.appendChild(userDiv);
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Fetch AI Response
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: msg})
+                });
+                const data = await res.json();
+
+                // Add Bot Message
+                const botDiv = document.createElement('div');
+                botDiv.className = "bg-slate-700/50 p-2 text-slate-200 self-start text-xs rounded-lg rounded-tl-none border-l-2 border-indigo-400 mr-8";
+                botDiv.innerText = data.response;
+                chatMessages.appendChild(botDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            } catch (err) {
+                console.error('Chat Error', err);
+                const errDiv = document.createElement('div');
+                errDiv.className = "bg-red-900/50 p-2 text-red-300 self-start text-xs rounded-lg rounded-tl-none border-l-2 border-red-400 mr-8";
+                errDiv.innerText = "Connection error. Please try again.";
+                chatMessages.appendChild(errDiv);
+            }
+        });
+    }
+  </script>
+</html>
